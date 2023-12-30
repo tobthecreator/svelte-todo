@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { updated } from '$app/stores';
 	import TodoItem from '../components/TodoItem.svelte';
+	import type { TTodo } from '../lib';
 
 	let ID_NUM = 1;
 	const createUniqueId = () => {
@@ -11,6 +11,7 @@
 		{ id: createUniqueId(), description: 'hi', completed: false },
 		{ id: createUniqueId(), description: 'tyler', completed: true }
 	];
+	let description: string = '';
 
 	const onToggle = (id: string): void => {
 		const index = todos.findIndex((t) => t.id === id);
@@ -27,18 +28,29 @@
 
 		todos = cpy;
 	};
+
+	const addTodo = (description: string): void => {
+		const cpy = [...todos];
+		const newTodo: TTodo = {
+			id: createUniqueId(),
+			description,
+			completed: false
+		};
+
+		cpy.push(newTodo);
+		todos = cpy;
+	};
 </script>
 
-<!-- 
 <h2>Whatcha need to do my dood?</h2>
-<div>
+<!-- <div>
 	Filter Completed:
 	<input type="checkbox" checked={filter()} onChange={(e) => setFilter(() => e.target.checked)} />
-</div>
-<div>
-	<input value={description()} onChange={(e) => setDescription(() => e.target.value)} />
-	<button onClick={() => addTodo(description())}>Add</button>
 </div> -->
+<div>
+	<input bind:value={description} />
+	<button on:click={() => addTodo(description)}>Add</button>
+</div>
 {#each todos as todo}
 	<TodoItem {todo} {onToggle} {onDelete} />
 {/each}
