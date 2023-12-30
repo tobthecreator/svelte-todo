@@ -1,17 +1,14 @@
 <script lang="ts">
 	import TodoItem from '../components/TodoItem.svelte';
-	import type { TTodo } from '../lib';
-
-	let ID_NUM = 1;
-	const createUniqueId = () => {
-		return `todo-${ID_NUM++}`;
-	};
+	import { CreateUniqueId, type TTodo } from '../lib';
 
 	let todos = [
-		{ id: createUniqueId(), description: 'hi', completed: false },
-		{ id: createUniqueId(), description: 'tyler', completed: true }
+		{ id: CreateUniqueId(), description: 'hi', completed: false },
+		{ id: CreateUniqueId(), description: 'tyler', completed: true }
 	];
 	let description: string = '';
+	let filter: boolean = false;
+	$: filteredTodos = !filter ? todos : todos.filter((t) => !t.completed);
 
 	const onToggle = (id: string): void => {
 		const index = todos.findIndex((t) => t.id === id);
@@ -32,7 +29,7 @@
 	const addTodo = (description: string): void => {
 		const cpy = [...todos];
 		const newTodo: TTodo = {
-			id: createUniqueId(),
+			id: CreateUniqueId(),
 			description,
 			completed: false
 		};
@@ -43,14 +40,14 @@
 </script>
 
 <h2>Whatcha need to do my dood?</h2>
-<!-- <div>
+<div>
 	Filter Completed:
-	<input type="checkbox" checked={filter()} onChange={(e) => setFilter(() => e.target.checked)} />
-</div> -->
+	<input type="checkbox" bind:checked={filter} />
+</div>
 <div>
 	<input bind:value={description} />
 	<button on:click={() => addTodo(description)}>Add</button>
 </div>
-{#each todos as todo}
+{#each filteredTodos as todo}
 	<TodoItem {todo} {onToggle} {onDelete} />
 {/each}
